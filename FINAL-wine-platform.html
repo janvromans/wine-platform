@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinora — Find Your Wine, Anywhere</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --burgundy: #5C1A1A;
+    --wine: #8B2635;
+    --rose: #C4736A;
+    --cream: #F5EFE6;
+    --parchment: #EDE3D3;
+    --gold: #B8962E;
+    --gold-light: #D4AF5A;
+    --charcoal: #1C1C1C;
+    --warm-gray: #6B5E52;
+    --white: #FDFAF6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--white);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(253,250,246,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(184,150,46,0.15);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; font-weight: 300; letter-spacing: 0.12em;
+    color: var(--burgundy);
+  }
+  .nav-logo span { color: var(--gold); font-style: italic; }
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a {
+    text-decoration: none; color: var(--warm-gray);
+    font-size: 13px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--wine); }
+  .nav-cta {
+    background: var(--burgundy); color: var(--cream) !important;
+    padding: 10px 24px; border-radius: 2px;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--wine) !important; color: var(--cream) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    padding-top: 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--white) 0%, var(--parchment) 60%, var(--cream) 100%);
+  }
+  .hero-ornament {
+    position: absolute; right: -80px; top: 50px;
+    width: 680px; height: 680px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(139,38,53,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-left {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 80px 60px 80px 80px;
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: block;
+    width: 32px; height: 1px; background: var(--gold);
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 72px; font-weight: 300; line-height: 1.05;
+    color: var(--burgundy); margin-bottom: 28px;
+  }
+  h1 em { font-style: italic; color: var(--wine); }
+  .hero-sub {
+    font-size: 16px; font-weight: 300; line-height: 1.8;
+    color: var(--warm-gray); max-width: 440px; margin-bottom: 48px;
+  }
+
+  /* SEARCH BAR */
+  .search-wrapper {
+    background: white;
+    border: 1px solid rgba(184,150,46,0.3);
+    border-radius: 4px;
+    box-shadow: 0 8px 40px rgba(92,26,26,0.08);
+    overflow: hidden; max-width: 520px;
+  }
+  .search-top {
+    display: flex; align-items: center;
+    padding: 16px 20px; gap: 12px;
+    border-bottom: 1px solid var(--parchment);
+  }
+  .search-top input {
+    flex: 1; border: none; outline: none;
+    font-family: 'Jost', sans-serif; font-size: 15px;
+    color: var(--charcoal); background: transparent;
+  }
+  .search-top input::placeholder { color: #BAB0A8; }
+  .search-btn {
+    background: var(--burgundy); color: white;
+    border: none; padding: 10px 22px; border-radius: 2px;
+    font-family: 'Jost', sans-serif; font-size: 13px;
+    letter-spacing: 0.06em; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .search-btn:hover { background: var(--wine); }
+  .search-filters {
+    display: flex; gap: 0; 
+  }
+  .filter-chip {
+    flex: 1; padding: 10px 8px; text-align: center;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--warm-gray); cursor: pointer; border-right: 1px solid var(--parchment);
+    transition: all 0.2s; background: transparent; border-top: none; border-bottom: none; border-left: none;
+    font-family: 'Jost', sans-serif;
+  }
+  .filter-chip:last-child { border-right: none; }
+  .filter-chip.active { color: var(--wine); background: rgba(139,38,53,0.04); }
+  .filter-chip:hover { color: var(--wine); }
+
+  .hero-stats {
+    display: flex; gap: 40px; margin-top: 40px;
+  }
+  .stat { display: flex; flex-direction: column; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 600; color: var(--burgundy);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--warm-gray); margin-top: 4px;
+  }
+
+  /* HERO RIGHT - Wine visual */
+  .hero-right {
+    position: relative; z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px 60px;
+  }
+  .wine-showcase {
+    position: relative; width: 380px; height: 520px;
+  }
+  .wine-card-visual {
+    position: absolute;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(92,26,26,0.18);
+    overflow: hidden;
+    transition: transform 0.4s ease;
+  }
+  .wine-card-visual:hover { transform: translateY(-6px); }
+  .wc1 {
+    width: 200px; height: 300px;
+    left: 0; top: 60px;
+    background: linear-gradient(160deg, #3D0C0C 0%, #6B1515 40%, #8B2635 100%);
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 20px;
+  }
+  .wc2 {
+    width: 180px; height: 260px;
+    right: 0; top: 20px;
+    background: linear-gradient(160deg, #1A3A2A 0%, #2E6B4A 50%, #4A9B70 100%);
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 16px;
+  }
+  .wc3 {
+    width: 160px; height: 220px;
+    left: 60px; bottom: 0;
+    background: linear-gradient(160deg, #6B3A1A 0%, #9B5A2E 50%, #C47842 100%);
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 16px;
+  }
+  .wc-label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px; font-style: italic; color: rgba(255,255,255,0.9);
+    margin-bottom: 4px;
+  }
+  .wc-price {
+    font-size: 20px; font-weight: 500; color: white;
+  }
+  .wc-price small { font-size: 11px; opacity: 0.7; display: block; margin-top: 2px; }
+  .wc-badge {
+    position: absolute; top: 14px; right: 14px;
+    background: var(--gold); color: white;
+    font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 8px; border-radius: 2px;
+  }
+  .wc-providers {
+    font-size: 10px; color: rgba(255,255,255,0.6);
+    margin-top: 6px; letter-spacing: 0.06em;
+  }
+
+  /* SECTION COMMON */
+  section { padding: 96px 80px; }
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before { content: ''; display: block; width: 24px; height: 1px; background: var(--gold); }
+  h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px; font-weight: 300; line-height: 1.1;
+    color: var(--burgundy); margin-bottom: 16px;
+  }
+  h2 em { font-style: italic; }
+
+  /* HOW IT WORKS */
+  .how-section { background: var(--parchment); }
+  .how-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;
+    margin-top: 64px;
+  }
+  .how-step { position: relative; }
+  .step-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 80px; font-weight: 300; color: rgba(184,150,46,0.15);
+    line-height: 1; margin-bottom: -20px;
+  }
+  .step-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--burgundy); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 20px;
+    position: relative; z-index: 1;
+  }
+  .step-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600; color: var(--burgundy);
+    margin-bottom: 12px;
+  }
+  .step-desc { font-size: 14px; line-height: 1.7; color: var(--warm-gray); }
+  .how-connector {
+    position: absolute; top: 104px; right: -24px;
+    width: 48px; height: 1px; background: var(--gold-light); opacity: 0.5;
+    display: flex; align-items: center; justify-content: flex-end;
+  }
+  .how-connector::after {
+    content: '▶'; font-size: 8px; color: var(--gold-light); margin-right: -6px;
+  }
+
+  /* WINE RESULTS */
+  .results-section { background: white; }
+  .results-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 48px;
+  }
+  .results-tabs {
+    display: flex; gap: 0; border: 1px solid var(--parchment); border-radius: 4px; overflow: hidden;
+  }
+  .tab-btn {
+    padding: 10px 20px; font-family: 'Jost', sans-serif;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--warm-gray); background: white; border: none; cursor: pointer;
+    border-right: 1px solid var(--parchment); transition: all 0.2s;
+  }
+  .tab-btn:last-child { border-right: none; }
+  .tab-btn.active { background: var(--burgundy); color: white; }
+
+  .wine-results-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+  }
+  .wine-result-card {
+    border: 1px solid var(--parchment); border-radius: 6px;
+    overflow: hidden; transition: all 0.3s; cursor: pointer;
+    background: white;
+  }
+  .wine-result-card:hover {
+    border-color: rgba(184,150,46,0.4);
+    box-shadow: 0 8px 32px rgba(92,26,26,0.10);
+    transform: translateY(-2px);
+  }
+  .wine-card-img {
+    height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .wine-bottle {
+    width: 40px;
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+  }
+  .bottle-neck { width: 10px; height: 40px; border-radius: 5px 5px 0 0; }
+  .bottle-body { width: 32px; height: 80px; border-radius: 4px 4px 6px 6px; }
+  .bottle-label {
+    position: absolute; bottom: 24px;
+    width: 28px; height: 32px; background: rgba(255,255,255,0.9);
+    border-radius: 2px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif; font-size: 7px; color: var(--burgundy);
+    text-align: center; line-height: 1.2; padding: 2px;
+  }
+  .wrc-red .wine-card-img { background: linear-gradient(160deg, #F5EFE6, #EDD8C8); }
+  .wrc-red .bottle-neck, .wrc-red .bottle-body { background: #6B1515; }
+  .wrc-white .wine-card-img { background: linear-gradient(160deg, #F5EFE6, #EAE5C0); }
+  .wrc-white .bottle-neck, .wrc-white .bottle-body { background: #3A5A2A; }
+  .wrc-rose .wine-card-img { background: linear-gradient(160deg, #F5EFE6, #EDD0C0); }
+  .wrc-rose .bottle-neck, .wrc-rose .bottle-body { background: #9B3A5A; }
+
+  .wine-card-body { padding: 20px; }
+  .wine-card-region {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 6px;
+  }
+  .wine-card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 600; color: var(--burgundy);
+    line-height: 1.2; margin-bottom: 4px;
+  }
+  .wine-card-vintage { font-size: 13px; color: var(--warm-gray); margin-bottom: 16px; }
+  .wine-card-offers {
+    display: flex; flex-direction: column; gap: 8px;
+    border-top: 1px solid var(--parchment); padding-top: 16px;
+  }
+  .offer-row {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .offer-source { font-size: 12px; color: var(--charcoal); font-weight: 500; }
+  .offer-price { font-size: 16px; font-weight: 500; color: var(--wine); }
+  .offer-ship { font-size: 11px; color: var(--warm-gray); }
+  .offer-best {
+    display: inline-block;
+    background: rgba(184,150,46,0.1); color: var(--gold);
+    font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 2px; margin-left: 6px;
+  }
+  .wine-card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px; background: var(--cream);
+    border-top: 1px solid var(--parchment);
+  }
+  .providers-count { font-size: 12px; color: var(--warm-gray); }
+  .providers-count strong { color: var(--burgundy); }
+  .compare-btn {
+    font-size: 12px; font-weight: 500; color: var(--wine);
+    background: none; border: 1px solid rgba(139,38,53,0.3);
+    padding: 6px 14px; border-radius: 2px; cursor: pointer;
+    font-family: 'Jost', sans-serif; letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+  .compare-btn:hover { background: var(--wine); color: white; border-color: var(--wine); }
+
+  /* PROVIDERS */
+  .providers-section { background: var(--charcoal); }
+  .providers-section .section-label { color: var(--gold-light); }
+  .providers-section .section-label::before { background: var(--gold-light); }
+  .providers-section h2 { color: var(--cream); }
+  .providers-sub { font-size: 16px; color: rgba(245,239,230,0.6); max-width: 480px; margin-bottom: 64px; line-height: 1.7; }
+  .providers-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  }
+  .provider-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px; padding: 28px 24px; transition: all 0.3s;
+  }
+  .provider-card:hover {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(184,150,46,0.3);
+    transform: translateY(-2px);
+  }
+  .provider-icon { font-size: 32px; margin-bottom: 16px; }
+  .provider-type {
+    font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gold-light); margin-bottom: 8px;
+  }
+  .provider-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; color: var(--cream); margin-bottom: 10px;
+  }
+  .provider-desc { font-size: 13px; color: rgba(245,239,230,0.5); line-height: 1.6; }
+  .provider-count {
+    margin-top: 20px; padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    font-size: 12px; color: var(--gold-light);
+  }
+
+  /* LOGISTICS */
+  .logistics-section { background: var(--cream); }
+  .logistics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .logistics-visual {
+    background: white; border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(92,26,26,0.10);
+    padding: 32px; overflow: hidden;
+  }
+  .logistics-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px; font-weight: 600; color: var(--burgundy);
+    margin-bottom: 24px;
+  }
+  .logistics-row {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 0; border-bottom: 1px solid var(--parchment);
+  }
+  .logistics-row:last-child { border-bottom: none; }
+  .logistics-icon { font-size: 24px; width: 40px; text-align: center; }
+  .logistics-info { flex: 1; }
+  .logistics-name { font-size: 14px; font-weight: 500; color: var(--charcoal); }
+  .logistics-detail { font-size: 12px; color: var(--warm-gray); margin-top: 2px; }
+  .logistics-cost { font-size: 16px; font-weight: 500; color: var(--wine); }
+  .logistics-badge {
+    font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 2px;
+  }
+  .badge-green { background: rgba(74,155,112,0.12); color: #2E6B4A; }
+  .badge-blue { background: rgba(46,90,150,0.1); color: #2E5A96; }
+
+  .logistics-features { display: flex; flex-direction: column; gap: 28px; }
+  .lf-item { display: flex; gap: 20px; align-items: flex-start; }
+  .lf-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--parchment); color: var(--burgundy);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .lf-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--burgundy); margin-bottom: 6px; }
+  .lf-desc { font-size: 14px; color: var(--warm-gray); line-height: 1.6; }
+
+  /* FOOTER CTA */
+  .cta-section {
+    background: linear-gradient(135deg, var(--burgundy) 0%, #3D0C0C 100%);
+    text-align: center; padding: 120px 80px;
+    position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px; border-radius: 50%;
+    background: rgba(184,150,46,0.08); pointer-events: none;
+  }
+  .cta-section .section-label { justify-content: center; }
+  .cta-section .section-label::before { display: none; }
+  .cta-section h2 { color: var(--cream); }
+  .cta-section p { font-size: 17px; color: rgba(245,239,230,0.6); max-width: 480px; margin: 0 auto 48px; line-height: 1.7; }
+  .cta-buttons { display: flex; gap: 16px; justify-content: center; }
+  .btn-primary {
+    background: var(--gold); color: white;
+    padding: 16px 40px; border-radius: 2px; border: none;
+    font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 500;
+    letter-spacing: 0.08em; cursor: pointer; transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--gold-light); }
+  .btn-secondary {
+    background: transparent; color: var(--cream);
+    padding: 16px 40px; border-radius: 2px;
+    border: 1px solid rgba(245,239,230,0.3);
+    font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 400;
+    letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--gold-light); color: var(--gold-light); }
+
+  /* FOOTER */
+  footer {
+    background: var(--charcoal); color: rgba(245,239,230,0.4);
+    padding: 48px 80px; display: flex;
+    align-items: center; justify-content: space-between;
+    font-size: 13px;
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 300; color: var(--cream);
+    letter-spacing: 0.12em;
+  }
+  .footer-logo span { color: var(--gold); font-style: italic; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-left > * {
+    opacity: 0; animation: fadeUp 0.7s ease forwards;
+  }
+  .hero-left > *:nth-child(1) { animation-delay: 0.1s; }
+  .hero-left > *:nth-child(2) { animation-delay: 0.25s; }
+  .hero-left > *:nth-child(3) { animation-delay: 0.4s; }
+  .hero-left > *:nth-child(4) { animation-delay: 0.55s; }
+  .hero-left > *:nth-child(5) { animation-delay: 0.7s; }
+  .hero-right {
+    opacity: 0; animation: fadeUp 0.9s ease 0.5s forwards;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Vin<span>ora</span></div>
+  <div class="nav-links">
+    <a href="#">Discover</a>
+    <a href="#">Providers</a>
+    <a href="#">Compare</a>
+    <a href="#">Regions</a>
+    <a href="vinora-business-plan.html">Business Plan</a>
+    <a href="#" class="nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-ornament"></div>
+  <div class="hero-left">
+    <div class="hero-eyebrow">The Wine Marketplace</div>
+    <h1>Find your <em>perfect</em><br>wine at the<br>best price</h1>
+    <p class="hero-sub">Compare prices across hundreds of stores, webshops, and wineries. One search. Every provider. The best deal delivered to your door.</p>
+    <div class="search-wrapper">
+      <div class="search-top">
+        <input type="text" placeholder="Search wine, region, grape variety…" value="Château Margaux 2018">
+        <button class="search-btn">Search</button>
+      </div>
+      <div class="search-filters">
+        <button class="filter-chip active">All Types</button>
+        <button class="filter-chip">Red</button>
+        <button class="filter-chip">White</button>
+        <button class="filter-chip">Rosé</button>
+        <button class="filter-chip">Sparkling</button>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">2,400+</span>
+        <span class="stat-label">Providers</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">180K</span>
+        <span class="stat-label">Wine Labels</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">32</span>
+        <span class="stat-label">Countries</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="wine-showcase">
+      <div class="wine-card-visual wc1">
+        <div class="wc-badge">Best Price</div>
+        <div class="wc-label">Pomerol AOC</div>
+        <div class="wc-price">€89
+          <small>6 providers found</small>
+        </div>
+        <div class="wc-providers">📦 Ships in 2–3 days</div>
+      </div>
+      <div class="wine-card-visual wc2">
+        <div class="wc-badge">In Stock</div>
+        <div class="wc-label">Sancerre</div>
+        <div class="wc-price">€32
+          <small>11 providers found</small>
+        </div>
+        <div class="wc-providers">🚚 Free shipping</div>
+      </div>
+      <div class="wine-card-visual wc3">
+        <div class="wc-label">Rioja Reserva</div>
+        <div class="wc-price">€24
+          <small>9 providers found</small>
+        </div>
+        <div class="wc-providers">⭐ 4.8 rating</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <div class="section-label">How It Works</div>
+  <h2>From search to <em>sip</em> in minutes</h2>
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="step-num">01</div>
+      <div class="step-icon">🔍</div>
+      <div class="step-title">Search Your Wine</div>
+      <p class="step-desc">Enter a wine name, region, grape variety, or taste profile. Our engine searches across all connected providers in real time.</p>
+      <div class="how-connector"></div>
+    </div>
+    <div class="how-step">
+      <div class="step-num">02</div>
+      <div class="step-icon">⚖️</div>
+      <div class="step-title">Compare Prices</div>
+      <p class="step-desc">See every available listing side by side — including shipping costs, available stock, and seller ratings.</p>
+      <div class="how-connector"></div>
+    </div>
+    <div class="how-step">
+      <div class="step-num">03</div>
+      <div class="step-icon">🚚</div>
+      <div class="step-title">Choose Delivery</div>
+      <p class="step-desc">Pick the logistics option that suits you: express, standard, collect at winery, or temperature-controlled courier.</p>
+      <div class="how-connector"></div>
+    </div>
+    <div class="how-step">
+      <div class="step-num">04</div>
+      <div class="step-icon">🍷</div>
+      <div class="step-title">Order & Enjoy</div>
+      <p class="step-desc">Place your order directly with the provider. Track your shipment and rate your experience.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WINE RESULTS EXAMPLE -->
+<section class="results-section">
+  <div class="results-header">
+    <div>
+      <div class="section-label">Live Results Preview</div>
+      <h2>Searching <em>"Burgundy"</em></h2>
+    </div>
+    <div class="results-tabs">
+      <button class="tab-btn active">Best Price</button>
+      <button class="tab-btn">Top Rated</button>
+      <button class="tab-btn">Fastest Ship</button>
+    </div>
+  </div>
+  <div class="wine-results-grid">
+    <!-- Card 1 -->
+    <div class="wine-result-card wrc-red">
+      <div class="wine-card-img">
+        <div class="wine-bottle">
+          <div class="bottle-neck"></div>
+          <div class="bottle-body"></div>
+          <div class="bottle-label">Gevrey</div>
+        </div>
+      </div>
+      <div class="wine-card-body">
+        <div class="wine-card-region">Burgundy, France · Pinot Noir</div>
+        <div class="wine-card-name">Gevrey-Chambertin 1er Cru</div>
+        <div class="wine-card-vintage">Louis Jadot · 2020</div>
+        <div class="wine-card-offers">
+          <div class="offer-row">
+            <span class="offer-source">Millesima <span class="offer-best">Best</span></span>
+            <span class="offer-price">€74.90</span>
+          </div>
+          <div class="offer-row">
+            <span class="offer-ship">🚚 Free shipping · 3–5 days</span>
+          </div>
+          <div class="offer-row">
+            <span class="offer-source">WineSearcher Direct</span>
+            <span class="offer-price">€81.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="wine-card-footer">
+        <span class="providers-count"><strong>8</strong> providers found</span>
+        <button class="compare-btn">Compare All</button>
+      </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="wine-result-card wrc-white">
+      <div class="wine-card-img">
+        <div class="wine-bottle">
+          <div class="bottle-neck"></div>
+          <div class="bottle-body"></div>
+          <div class="bottle-label">Meursault</div>
+        </div>
+      </div>
+      <div class="wine-card-body">
+        <div class="wine-card-region">Côte de Beaune · Chardonnay</div>
+        <div class="wine-card-name">Meursault Les Charmes</div>
+        <div class="wine-card-vintage">Domaine Leflaive · 2021</div>
+        <div class="wine-card-offers">
+          <div class="offer-row">
+            <span class="offer-source">Vinatis <span class="offer-best">Best</span></span>
+            <span class="offer-price">€68.50</span>
+          </div>
+          <div class="offer-row">
+            <span class="offer-ship">🚚 €5.90 shipping · 2–4 days</span>
+          </div>
+          <div class="offer-row">
+            <span class="offer-source">Wijnkopen.nl</span>
+            <span class="offer-price">€72.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="wine-card-footer">
+        <span class="providers-count"><strong>13</strong> providers found</span>
+        <button class="compare-btn">Compare All</button>
+      </div>
+    </div>
+    <!-- Card 3 -->
+    <div class="wine-result-card wrc-rose">
+      <div class="wine-card-img">
+        <div class="wine-bottle">
+          <div class="bottle-neck"></div>
+          <div class="bottle-body"></div>
+          <div class="bottle-label">Volnay</div>
+        </div>
+      </div>
+      <div class="wine-card-body">
+        <div class="wine-card-region">Côte de Beaune · Pinot Noir</div>
+        <div class="wine-card-name">Volnay Taillepieds</div>
+        <div class="wine-card-vintage">Domaine de la Pousse d'Or · 2019</div>
+        <div class="wine-card-offers">
+          <div class="offer-row">
+            <span class="offer-source">Cellar Direct <span class="offer-best">Best</span></span>
+            <span class="offer-price">€95.00</span>
+          </div>
+          <div class="offer-row">
+            <span class="offer-ship">🌡️ Temp-controlled · 2 days</span>
+          </div>
+          <div class="offer-row">
+            <span class="offer-source">WineWorld.de</span>
+            <span class="offer-price">€108.00</span>
+          </div>
+        </div>
+      </div>
+      <div class="wine-card-footer">
+        <span class="providers-count"><strong>5</strong> providers found</span>
+        <button class="compare-btn">Compare All</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROVIDERS -->
+<section class="providers-section">
+  <div class="section-label">Our Network</div>
+  <h2 style="color: var(--cream)">Every source, <em>one platform</em></h2>
+  <p class="providers-sub">We connect directly with wineries, specialist retailers, online shops, and auction houses across Europe and beyond.</p>
+  <div class="providers-grid">
+    <div class="provider-card">
+      <div class="provider-icon">🏰</div>
+      <div class="provider-type">Direct Source</div>
+      <div class="provider-name">Wineries</div>
+      <p class="provider-desc">Direct estate sales from châteaux, domaines, and independent producers. Often lowest prices and rarest bottles.</p>
+      <div class="provider-count">340+ wineries connected</div>
+    </div>
+    <div class="provider-card">
+      <div class="provider-icon">🏪</div>
+      <div class="provider-type">Specialist Retail</div>
+      <div class="provider-name">Wine Stores</div>
+      <p class="provider-desc">Curated wine shops with expert curation and cellar-stored inventory. Available for in-store pickup too.</p>
+      <div class="provider-count">820+ stores across EU</div>
+    </div>
+    <div class="provider-card">
+      <div class="provider-icon">🌐</div>
+      <div class="provider-type">Online Commerce</div>
+      <div class="provider-name">Webshops</div>
+      <p class="provider-desc">Major and specialist online wine retailers with fast shipping and frequent promotions.</p>
+      <div class="provider-count">1,200+ webshops indexed</div>
+    </div>
+    <div class="provider-card">
+      <div class="provider-icon">🔨</div>
+      <div class="provider-type">Collector Market</div>
+      <div class="provider-name">Auction Houses</div>
+      <p class="provider-desc">Fine wine auctions and private sales for rare vintages, large formats, and investment-grade bottles.</p>
+      <div class="provider-count">40+ auction platforms</div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGISTICS -->
+<section class="logistics-section">
+  <div class="logistics-grid">
+    <div>
+      <div class="section-label">Delivery Options</div>
+      <h2>Smart <em>logistics</em><br>for your wine</h2>
+      <div class="logistics-features" style="margin-top: 40px;">
+        <div class="lf-item">
+          <div class="lf-icon">🌡️</div>
+          <div>
+            <div class="lf-title">Temperature Controlled</div>
+            <p class="lf-desc">Refrigerated transport for delicate whites, sparkling and premium reds — ensuring perfect condition on arrival.</p>
+          </div>
+        </div>
+        <div class="lf-item">
+          <div class="lf-icon">📍</div>
+          <div>
+            <div class="lf-title">Click & Collect</div>
+            <p class="lf-desc">Reserve online, collect at any partner store or winery near you. Free and immediate when in stock.</p>
+          </div>
+        </div>
+        <div class="lf-item">
+          <div class="lf-icon">📦</div>
+          <div>
+            <div class="lf-title">Case Consolidation</div>
+            <p class="lf-desc">Order from multiple providers and we consolidate into one shipment, saving on shipping costs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="logistics-visual">
+      <div class="logistics-title">Available for: Château Pichon Baron 2018</div>
+      <div class="logistics-row">
+        <div class="logistics-icon">⚡</div>
+        <div class="logistics-info">
+          <div class="logistics-name">Express Delivery</div>
+          <div class="logistics-detail">Next day · Millesima · In stock</div>
+        </div>
+        <div style="text-align: right;">
+          <div class="logistics-cost">€14.90</div>
+          <span class="logistics-badge badge-blue">Fastest</span>
+        </div>
+      </div>
+      <div class="logistics-row">
+        <div class="logistics-icon">🚚</div>
+        <div class="logistics-info">
+          <div class="logistics-name">Standard Shipping</div>
+          <div class="logistics-detail">3–5 days · Vinatis · In stock</div>
+        </div>
+        <div style="text-align: right;">
+          <div class="logistics-cost">Free</div>
+          <span class="logistics-badge badge-green">Best Value</span>
+        </div>
+      </div>
+      <div class="logistics-row">
+        <div class="logistics-icon">🌡️</div>
+        <div class="logistics-info">
+          <div class="logistics-name">Temperature Control</div>
+          <div class="logistics-detail">2–3 days · Cellar Direct · In stock</div>
+        </div>
+        <div style="text-align: right;">
+          <div class="logistics-cost">€24.00</div>
+        </div>
+      </div>
+      <div class="logistics-row">
+        <div class="logistics-icon">📍</div>
+        <div class="logistics-info">
+          <div class="logistics-name">Click & Collect</div>
+          <div class="logistics-detail">Today · WineStore Den Haag · 2.4km</div>
+        </div>
+        <div style="text-align: right;">
+          <div class="logistics-cost">Free</div>
+          <span class="logistics-badge badge-green">Immediate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="section-label">Join the Platform</div>
+  <h2>Ready to find your <em>perfect</em> wine?</h2>
+  <p>Join 40,000+ wine lovers who never overpay or struggle to find the bottle they want. Free to use, always.</p>
+  <div class="cta-buttons">
+    <button class="btn-primary">Start Searching Free</button>
+    <button class="btn-secondary">List Your Wine Shop</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Vin<span>ora</span></div>
+  <div>© 2026 Vinora. The wine marketplace for enthusiasts.</div>
+  <div style="display: flex; gap: 24px;">
+    <a href="#" style="color: inherit; text-decoration: none;">Privacy</a>
+    <a href="#" style="color: inherit; text-decoration: none;">Terms</a>
+    <a href="#" style="color: inherit; text-decoration: none;">API for Providers</a>
+  </div>
+</footer>
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
