@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinora — The Wine Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --burgundy: #5C1A1A; --wine: #8B2635; --gold: #B8962E;
+    --gold-light: #D4AF5A; --cream: #F7F2EA; --ink: #12100E;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Jost', sans-serif; background: var(--ink); color: var(--cream);
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  body::before {
+    content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 900px; height: 900px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(92,26,26,0.22) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  body::after {
+    content: ''; position: absolute; bottom: -150px; right: -100px;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(184,150,46,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .container {
+    position: relative; z-index: 1; text-align: center;
+    padding: 48px 32px; max-width: 920px; width: 100%;
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 64px; font-weight: 300; letter-spacing: 0.08em;
+    color: var(--cream); margin-bottom: 4px;
+    animation: fadeDown 0.7s ease forwards;
+  }
+  .logo span { color: var(--gold-light); font-style: italic; }
+  .tagline {
+    font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(212,175,90,0.6); margin-bottom: 48px;
+    animation: fadeDown 0.7s ease 0.15s both;
+  }
+  .divider { width: 48px; height: 1px; background: rgba(184,150,46,0.35); margin: 0 auto 48px; animation: fadeDown 0.7s ease 0.25s both; }
+  .cards-top { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; animation: fadeUp 0.7s ease 0.35s both; }
+  .cards-bottom { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-top: 16px; max-width: 616px; margin-left: auto; margin-right: auto; animation: fadeUp 0.7s ease 0.45s both; }
+  .card {
+    display: block; text-decoration: none;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 28px 24px; transition: all 0.3s;
+    position: relative; overflow: hidden; text-align: left;
+  }
+  .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--burgundy), var(--gold)); opacity: 0; transition: opacity 0.3s; }
+  .card:hover { border-color: rgba(184,150,46,0.25); background: rgba(255,255,255,0.055); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .card:hover::before { opacity: 1; }
+  .card-icon { font-size: 28px; margin-bottom: 16px; display: block; }
+  .card-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--cream); margin-bottom: 8px; line-height: 1.15; }
+  .card-desc { font-size: 12px; font-weight: 300; color: rgba(245,239,230,0.45); line-height: 1.65; }
+  .card-arrow { display: flex; align-items: center; justify-content: flex-end; margin-top: 18px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(184,150,46,0.5); gap: 8px; transition: color 0.2s, gap 0.2s; }
+  .card:hover .card-arrow { color: var(--gold-light); gap: 12px; }
+  .footer-note { margin-top: 48px; font-size: 12px; color: rgba(245,239,230,0.2); letter-spacing: 0.06em; animation: fadeUp 0.7s ease 0.55s both; }
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">Vin<span>ora</span></div>
+  <div class="tagline">The Wine Marketplace</div>
+  <div class="divider"></div>
+  <div class="cards-top">
+    <a href="wine-platform.html" class="card">
+      <span class="card-icon">🍷</span>
+      <div class="card-label">Live Platform</div>
+      <div class="card-title">Wine Search</div>
+      <p class="card-desc">Search and compare prices across hundreds of providers, powered by AI.</p>
+      <div class="card-arrow">Search →</div>
+    </a>
+    <a href="regions.html" class="card">
+      <span class="card-icon">🗺️</span>
+      <div class="card-label">Discovery</div>
+      <div class="card-title">Regions Explorer</div>
+      <p class="card-desc">Dive into the world's great wine regions — from Burgundy to Barossa Valley.</p>
+      <div class="card-arrow">Explore →</div>
+    </a>
+    <a href="blog.html" class="card">
+      <span class="card-icon">📖</span>
+      <div class="card-label">Editorial</div>
+      <div class="card-title">Wine Blog</div>
+      <p class="card-desc">Stories, tasting notes and guides from our team of wine enthusiasts.</p>
+      <div class="card-arrow">Read →</div>
+    </a>
+  </div>
+  <div class="cards-bottom">
+    <a href="signup.html" class="card">
+      <span class="card-icon">🏪</span>
+      <div class="card-label">For Providers</div>
+      <div class="card-title">List Your Shop</div>
+      <p class="card-desc">Join our network of 2,400+ wine retailers, webshops and wineries.</p>
+      <div class="card-arrow">Join →</div>
+    </a>
+    <a href="vinora-business-plan.html" class="card">
+      <span class="card-icon">📋</span>
+      <div class="card-label">Strategy</div>
+      <div class="card-title">Business Plan</div>
+      <p class="card-desc">Revenue model, architecture and go-to-market for investors and partners.</p>
+      <div class="card-arrow">Read →</div>
+    </a>
+  </div>
+  <div class="footer-note">vinora · 2026 · built with Claude</div>
+</div>
+</body>
+</html>
