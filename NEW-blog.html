@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinora — Wine Blog</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --burgundy:#5C1A1A; --wine:#8B2635; --gold:#B8962E; --gold-light:#D4AF5A;
+    --cream:#F7F2EA; --parchment:#EDE3D3; --ink:#12100E;
+    --charcoal:#1C1C1C; --warm:#6B5E52; --white:#FDFAF6;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Jost',sans-serif; background:var(--white); color:var(--charcoal); }
+
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:20px 48px; background:rgba(253,250,246,0.92); backdrop-filter:blur(12px); border-bottom:1px solid rgba(184,150,46,0.15); }
+  .nav-logo { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:300; letter-spacing:0.12em; color:var(--burgundy); text-decoration:none; }
+  .nav-logo span { color:var(--gold); font-style:italic; }
+  .nav-links { display:flex; gap:28px; align-items:center; }
+  .nav-links a { text-decoration:none; color:var(--warm); font-size:13px; letter-spacing:0.08em; text-transform:uppercase; transition:color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color:var(--wine); }
+
+  .blog-header { padding:140px 80px 64px; border-bottom:1px solid var(--parchment); }
+  .header-eyebrow { font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; gap:12px; }
+  .header-eyebrow::before { content:''; width:24px; height:1px; background:var(--gold); display:block; }
+  .blog-header h1 { font-family:'Cormorant Garamond',serif; font-size:64px; font-weight:300; line-height:1.05; color:var(--burgundy); margin-bottom:20px; }
+  .blog-header h1 em { font-style:italic; }
+  .blog-header p { font-size:16px; color:var(--warm); max-width:480px; line-height:1.75; }
+
+  .blog-tags { display:flex; gap:10px; padding:28px 80px; border-bottom:1px solid var(--parchment); overflow-x:auto; }
+  .blog-tag { padding:7px 18px; border-radius:20px; font-size:12px; font-weight:500; letter-spacing:0.06em; cursor:pointer; border:1px solid var(--parchment); color:var(--warm); transition:all 0.2s; white-space:nowrap; background:none; font-family:'Jost',sans-serif; }
+  .blog-tag:hover { border-color:var(--gold); color:var(--gold); }
+  .blog-tag.active { background:var(--burgundy); color:white; border-color:var(--burgundy); }
+
+  .blog-layout { display:grid; grid-template-columns:2fr 1fr; gap:0; }
+
+  /* MAIN FEED */
+  .blog-feed { padding:64px 80px; border-right:1px solid var(--parchment); }
+
+  .featured-post { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; margin-bottom:64px; padding-bottom:64px; border-bottom:1px solid var(--parchment); cursor:pointer; }
+  .featured-post:hover .post-title { color:var(--wine); }
+  .featured-img { height:320px; border-radius:6px; overflow:hidden; position:relative; }
+  .featured-gradient { position:absolute; inset:0; }
+  .fg1 { background:linear-gradient(135deg, #3D0C0C 0%, #8B2635 60%, #C47842 100%); }
+  .featured-img-icon { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:80px; opacity:0.15; }
+  .post-tag { font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+  .post-title { font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:600; color:var(--burgundy); line-height:1.15; margin-bottom:14px; transition:color 0.2s; }
+  .post-excerpt { font-size:14px; color:var(--warm); line-height:1.75; margin-bottom:20px; }
+  .post-meta { display:flex; align-items:center; gap:16px; }
+  .post-author { display:flex; align-items:center; gap:8px; }
+  .author-avatar { width:32px; height:32px; border-radius:50%; background:var(--parchment); display:flex; align-items:center; justify-content:center; font-size:14px; }
+  .author-name { font-size:13px; color:var(--charcoal); }
+  .post-date { font-size:12px; color:var(--warm); }
+  .featured-badge { display:inline-block; background:var(--gold); color:white; font-size:9px; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; padding:3px 10px; border-radius:2px; margin-bottom:12px; }
+
+  .posts-grid { display:flex; flex-direction:column; gap:40px; }
+  .post-card { display:grid; grid-template-columns:200px 1fr; gap:28px; cursor:pointer; padding-bottom:40px; border-bottom:1px solid var(--parchment); }
+  .post-card:last-child { border-bottom:none; }
+  .post-card:hover .post-card-title { color:var(--wine); }
+  .post-card-img { height:130px; border-radius:4px; overflow:hidden; position:relative; }
+  .post-card-gradient { position:absolute; inset:0; }
+  .pg1 { background:linear-gradient(135deg, #1A3A2A, #4A9B70); }
+  .pg2 { background:linear-gradient(135deg, #1A2A3D, #4A709B); }
+  .pg3 { background:linear-gradient(135deg, #3A2A0A, #9B7030); }
+  .pg4 { background:linear-gradient(135deg, #2A0A3A, #7030AB); }
+  .pg5 { background:linear-gradient(135deg, #0A2A2A, #309B9B); }
+  .post-card-img-icon { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:40px; opacity:0.15; }
+  .post-card-tag { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+  .post-card-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--burgundy); line-height:1.2; margin-bottom:8px; transition:color 0.2s; }
+  .post-card-excerpt { font-size:13px; color:var(--warm); line-height:1.65; margin-bottom:12px; }
+  .post-card-meta { font-size:12px; color:rgba(107,94,82,0.6); }
+
+  /* SIDEBAR */
+  .blog-sidebar { padding:64px 40px; }
+  .sidebar-section { margin-bottom:48px; }
+  .sidebar-title { font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--gold); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+  .sidebar-title::before { content:''; width:16px; height:1px; background:var(--gold); display:block; }
+
+  .newsletter-box { background:var(--parchment); border-radius:6px; padding:24px; }
+  .newsletter-box p { font-size:13px; color:var(--warm); line-height:1.6; margin-bottom:16px; }
+  .newsletter-box h3 { font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--burgundy); margin-bottom:10px; }
+  .newsletter-input { width:100%; border:1px solid rgba(184,150,46,0.25); border-radius:3px; padding:11px 14px; font-family:'Jost',sans-serif; font-size:13px; outline:none; background:white; margin-bottom:10px; color:var(--charcoal); }
+  .newsletter-input:focus { border-color:var(--gold); }
+  .newsletter-btn { width:100%; background:var(--burgundy); color:white; border:none; padding:11px; border-radius:3px; font-family:'Jost',sans-serif; font-size:13px; letter-spacing:0.06em; cursor:pointer; transition:background 0.2s; }
+  .newsletter-btn:hover { background:var(--wine); }
+
+  .trending-list { display:flex; flex-direction:column; gap:16px; }
+  .trending-item { display:flex; gap:14px; cursor:pointer; }
+  .trending-item:hover .trending-title { color:var(--wine); }
+  .trending-num { font-family:'Cormorant Garamond',serif; font-size:28px; color:rgba(184,150,46,0.2); font-weight:600; line-height:1; flex-shrink:0; width:28px; }
+  .trending-title { font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--burgundy); line-height:1.3; margin-bottom:2px; transition:color 0.2s; }
+  .trending-meta { font-size:11px; color:var(--warm); }
+
+  .taste-tags { display:flex; gap:8px; flex-wrap:wrap; }
+  .taste-tag { padding:6px 14px; border-radius:20px; font-size:12px; border:1px solid var(--parchment); color:var(--warm); cursor:pointer; transition:all 0.2s; }
+  .taste-tag:hover { border-color:var(--gold); color:var(--gold); }
+
+  footer { background:var(--charcoal); color:rgba(245,239,230,0.4); padding:40px 80px; display:flex; align-items:center; justify-content:space-between; font-size:13px; }
+  .footer-logo { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--cream); letter-spacing:0.12em; text-decoration:none; }
+  .footer-logo span { color:var(--gold); font-style:italic; }
+  footer a { color:inherit; text-decoration:none; }
+  footer a:hover { color:var(--gold-light); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  .featured-post { animation:fadeUp 0.5s ease 0.1s both; }
+  .post-card:nth-child(1) { animation:fadeUp 0.5s ease 0.2s both; }
+  .post-card:nth-child(2) { animation:fadeUp 0.5s ease 0.3s both; }
+  .post-card:nth-child(3) { animation:fadeUp 0.5s ease 0.4s both; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Vin<span>ora</span></a>
+  <div class="nav-links">
+    <a href="wine-platform.html">Search</a>
+    <a href="regions.html">Regions</a>
+    <a href="blog.html" class="active">Blog</a>
+    <a href="signup.html">For Providers</a>
+  </div>
+</nav>
+
+<div class="blog-header">
+  <div class="header-eyebrow">Editorial</div>
+  <h1>Wine stories,<br>tasting notes & <em>guides</em></h1>
+  <p>From beginner's guides to deep dives into rare appellations — our team of wine enthusiasts writes for curious palates.</p>
+</div>
+
+<div class="blog-tags">
+  <button class="blog-tag active" onclick="setTag(this)">All</button>
+  <button class="blog-tag" onclick="setTag(this)">Tasting Notes</button>
+  <button class="blog-tag" onclick="setTag(this)">Buying Guide</button>
+  <button class="blog-tag" onclick="setTag(this)">Regions</button>
+  <button class="blog-tag" onclick="setTag(this)">Food & Wine</button>
+  <button class="blog-tag" onclick="setTag(this)">Natural Wine</button>
+  <button class="blog-tag" onclick="setTag(this)">Investment</button>
+  <button class="blog-tag" onclick="setTag(this)">Interviews</button>
+</div>
+
+<div class="blog-layout">
+  <div class="blog-feed">
+
+    <!-- FEATURED -->
+    <div class="featured-post">
+      <div class="featured-img">
+        <div class="featured-gradient fg1"></div>
+        <div class="featured-img-icon">🍷</div>
+      </div>
+      <div>
+        <span class="featured-badge">Featured</span>
+        <div class="post-tag">Buying Guide</div>
+        <div class="post-title">The 10 best Burgundy wines under €50 in 2026</div>
+        <p class="post-excerpt">Burgundy's reputation for eye-watering prices can make it feel inaccessible — but there's a world of exceptional drinking to be found without breaking the bank. We tested 40 bottles to find the best value.</p>
+        <div class="post-meta">
+          <div class="post-author">
+            <div class="author-avatar">👩</div>
+            <span class="author-name">Sophie Laurent</span>
+          </div>
+          <span class="post-date">March 4, 2026 · 8 min read</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST GRID -->
+    <div class="posts-grid">
+      <div class="post-card">
+        <div class="post-card-img">
+          <div class="post-card-gradient pg1"></div>
+          <div class="post-card-img-icon">🌿</div>
+        </div>
+        <div>
+          <div class="post-card-tag">Natural Wine</div>
+          <div class="post-card-title">Why natural wine isn't just a trend — it's a movement</div>
+          <p class="post-card-excerpt">From biodynamic farming in the Loire to minimal intervention cellars in Catalonia, we explore what natural wine really means and why it matters to the future of wine.</p>
+          <div class="post-card-meta">Isabelle Moreau · Feb 20, 2026 · 6 min read</div>
+        </div>
+      </div>
+      <div class="post-card">
+        <div class="post-card-img">
+          <div class="post-card-gradient pg2"></div>
+          <div class="post-card-img-icon">🥂</div>
+        </div>
+        <div>
+          <div class="post-card-tag">Regions</div>
+          <div class="post-card-title">Champagne vs. Crémant: is the difference worth the price?</div>
+          <p class="post-card-excerpt">Crémant has been quietly improving for two decades. We put six Crémants head-to-head against six non-vintage Champagnes in a blind tasting. The results surprised everyone.</p>
+          <div class="post-card-meta">Thomas Dubois · Feb 14, 2026 · 5 min read</div>
+        </div>
+      </div>
+      <div class="post-card">
+        <div class="post-card-img">
+          <div class="post-card-gradient pg3"></div>
+          <div class="post-card-img-icon">🍝</div>
+        </div>
+        <div>
+          <div class="post-card-tag">Food & Wine</div>
+          <div class="post-card-title">The ultimate guide to pairing wine with Dutch cuisine</div>
+          <p class="post-card-excerpt">Stamppot, bitterballen, stroopwafels — Dutch food has its own wonderful character. Here's our guide to finding the perfect wine for the Netherlands' best dishes.</p>
+          <div class="post-card-meta">Anna van der Berg · Feb 7, 2026 · 7 min read</div>
+        </div>
+      </div>
+      <div class="post-card">
+        <div class="post-card-img">
+          <div class="post-card-gradient pg4"></div>
+          <div class="post-card-img-icon">📈</div>
+        </div>
+        <div>
+          <div class="post-card-tag">Investment</div>
+          <div class="post-card-title">Which wines actually appreciate in value? A data-driven look</div>
+          <p class="post-card-excerpt">Not every expensive wine is a good investment. We analysed 10 years of auction data to find which regions, producers and vintages have genuinely rewarded patient collectors.</p>
+          <div class="post-card-meta">Marc Bertrand · Jan 28, 2026 · 10 min read</div>
+        </div>
+      </div>
+      <div class="post-card">
+        <div class="post-card-img">
+          <div class="post-card-gradient pg5"></div>
+          <div class="post-card-img-icon">🎙️</div>
+        </div>
+        <div>
+          <div class="post-card-tag">Interviews</div>
+          <div class="post-card-title">"We want people to be surprised by Riesling" — a conversation with a Mosel winemaker</div>
+          <p class="post-card-excerpt">We sat down with the fifth-generation owner of a family estate on the steep slate slopes of the Mosel to talk about climate change, dry Riesling, and why their wines are finally getting the recognition they deserve.</p>
+          <div class="post-card-meta">Sophie Laurent · Jan 15, 2026 · 9 min read</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="blog-sidebar">
+    <div class="sidebar-section">
+      <div class="newsletter-box">
+        <h3>The Vinora Weekly</h3>
+        <p>Best price alerts, new reviews and region spotlights — delivered every Friday.</p>
+        <input class="newsletter-input" type="email" placeholder="Your email address" id="nlEmail" />
+        <button class="newsletter-btn" onclick="subscribeNL()">Subscribe Free</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Trending This Week</div>
+      <div class="trending-list">
+        <div class="trending-item">
+          <div class="trending-num">1</div>
+          <div>
+            <div class="trending-title">Barolo vs. Barbaresco: which should you buy?</div>
+            <div class="trending-meta">Tasting Notes · 4.2K reads</div>
+          </div>
+        </div>
+        <div class="trending-item">
+          <div class="trending-num">2</div>
+          <div>
+            <div class="trending-title">The best white Burgundy under €40</div>
+            <div class="trending-meta">Buying Guide · 3.1K reads</div>
+          </div>
+        </div>
+        <div class="trending-item">
+          <div class="trending-num">3</div>
+          <div>
+            <div class="trending-title">Why 2020 Bordeaux is so special</div>
+            <div class="trending-meta">Regions · 2.8K reads</div>
+          </div>
+        </div>
+        <div class="trending-item">
+          <div class="trending-num">4</div>
+          <div>
+            <div class="trending-title">Prosecco vs. Cava vs. Crémant</div>
+            <div class="trending-meta">Buying Guide · 2.3K reads</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Explore by Taste</div>
+      <div class="taste-tags">
+        <span class="taste-tag">Earthy</span>
+        <span class="taste-tag">Fruity</span>
+        <span class="taste-tag">Mineral</span>
+        <span class="taste-tag">Tannic</span>
+        <span class="taste-tag">Floral</span>
+        <span class="taste-tag">Oaky</span>
+        <span class="taste-tag">Crisp</span>
+        <span class="taste-tag">Rich</span>
+        <span class="taste-tag">Spicy</span>
+        <span class="taste-tag">Smoky</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Search for Wines</div>
+      <p style="font-size:13px;color:var(--warm);line-height:1.6;margin-bottom:14px;">Found a wine in an article you'd like to buy? Search all providers on Vinora.</p>
+      <a href="wine-platform.html" style="display:block;background:var(--burgundy);color:white;padding:12px 20px;border-radius:3px;text-decoration:none;font-size:13px;letter-spacing:0.06em;text-align:center;transition:background 0.2s;" onmouseover="this.style.background='var(--wine)'" onmouseout="this.style.background='var(--burgundy)'">Search & Compare Prices →</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <a href="index.html" class="footer-logo">Vin<span>ora</span></a>
+  <div>© 2026 Vinora. The wine marketplace for enthusiasts.</div>
+  <div style="display:flex;gap:24px;"><a href="wine-platform.html">Search</a><a href="regions.html">Regions</a><a href="signup.html">Providers</a></div>
+</footer>
+
+<script>
+function setTag(el) {
+  document.querySelectorAll('.blog-tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+function subscribeNL() {
+  const email = document.getElementById('nlEmail').value.trim();
+  if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
+  document.getElementById('nlEmail').value = '';
+  document.querySelector('.newsletter-btn').textContent = '✓ Subscribed!';
+  setTimeout(() => document.querySelector('.newsletter-btn').textContent = 'Subscribe Free', 3000);
+}
+</script>
+</body>
+</html>
