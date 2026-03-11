@@ -55,10 +55,11 @@ export default async function handler(req, res) {
     });
 
     const claudeData = await claudeResponse.json();
-    console.log('Claude response:', JSON.stringify(claudeData));
+    console.log('Claude raw:', JSON.stringify(claudeData));
     const text = claudeData.content?.[0]?.text || '[]';
     console.log('Claude text:', text);
-    const aiResults = JSON.parse(text.replace(/```json|```/g, '').trim());
+    const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    const aiResults = JSON.parse(cleaned);
     return res.status(200).json({ source: 'ai', results: aiResults });
 
   } catch(e) {
