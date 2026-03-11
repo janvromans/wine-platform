@@ -26,6 +26,8 @@ export default async function handler(req, res) {
     });
 
     const dbResults = await dbResponse.json();
+    console.log('Supabase status:', dbResponse.status);
+    console.log('Supabase results:', JSON.stringify(dbResults));
 
     if (Array.isArray(dbResults) && dbResults.length > 0) {
       return res.status(200).json({ source: 'database', results: dbResults });
