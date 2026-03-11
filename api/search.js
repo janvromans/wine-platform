@@ -23,15 +23,26 @@ export default async function handler(req, res) {
         max_tokens: 1000,
         messages: [{
           role: 'user',
-          content: `You are a wine expert for Vinora. Return ONLY a valid JSON array of 2-3 wine results for the query "${query}". Each result must have: name, region, score, description, offers (array with source, price, shipping, best). Use realistic European retailers and Euro prices. Filter: ${filter || 'All'}. Return ONLY the JSON array, nothing else.`
+          content: `You are a wine expert for Vinora. Return ONLY a valid JSON array of 2 wine results for the query "${query}". Each result must have exactly these fields: name, region, score, description, offers. offers is an array of 2 objects each with: source, price, shipping, best. Example: [{"name":"Chateau Margaux","region":"Bordeaux, France","score":"94 pts","description":"Elegant and complex.","offers":[{"source":"Millesima","price":"€89.00","shipping":"Free shipping","best":true},{"source":"Vinatis","price":"€95.00","shipping":"€5.90","best":false}]}]`
         }]
       })
     });
 
     const claudeData = await claudeResponse.json();
-    const text = claudeData.content?.[0]?.text || '[]';
-    const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    const aiResults = JSON.parse(cleaned);
+    
+    if (!claudeData.content || !claudeData.content[0]) {
+      return res.status(500).json({ error: 'No content from Claude', raw: claudeData });
+    }
+    
+    const text = claudeData.content[0].text;
+    
+    // Find JSON array in response
+    const match = text.match(/\[[\s\S]*\]/);
+    if (!match) {
+      return res.status(500).json({ error: 'No JSON found', text: text });
+    }
+    
+    const aiResults = JSON.parse(match[0]);
     return res.status(200).json({ source: 'ai', results: aiResults });
 
   } catch(e) {
