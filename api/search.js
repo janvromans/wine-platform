@@ -47,7 +47,7 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-4-5-20251001',
         max_tokens: 1000,
         system: `You are a wine expert AI for Vinora. Return ONLY a valid JSON array of 2-3 wine results with fields: name, region, score, description, offers (array with source, price, shipping, best). Use realistic European retailers and Euro prices. Filter type: ${filter || 'All'}.`,
         messages: [{ role: 'user', content: `Search: "${query}"` }]
