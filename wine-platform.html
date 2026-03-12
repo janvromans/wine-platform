@@ -339,7 +339,7 @@ if (data.source === 'database') {
     </div>
     ${others.map(o => `
     <div class="rc-offer" style="cursor:pointer" onclick="window.open('${o.url}', '_blank')">
-      <div class="rc-offer-source">${o.providers?.name || 'Unknown'} ↗</div>
+      <div class="rc-offer-source">${best.providers?.name || 'Unknown'} ↗</div>
       <div class="rc-offer-price">€${parseFloat(o.price_amount).toFixed(2)}</div>
       <div class="rc-offer-ship">${o.shipping_cost == 0 ? 'Free shipping' : '€' + parseFloat(o.shipping_cost).toFixed(2) + ' shipping'}</div>
     </div>`).join('')}
