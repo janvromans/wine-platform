@@ -101,7 +101,8 @@ export default async function handler(req, res) {
 
     } else {
       // STANDARD WINE NAME / REGION / GRAPE SEARCH
-      let url = `${supabaseUrl}/rest/v1/wines?select=*,prices(price_amount,currency,url,in_stock,shipping_cost,providers(name,website))&or=(name.ilike.*${encodeURIComponent(query)}*,region.ilike.*${encodeURIComponent(query)}*,grape.ilike.*${encodeURIComponent(query)}*,country.ilike.*${encodeURIComponent(query)}*,type.ilike.*${encodeURIComponent(query)}*,description.ilike.*${encodeURIComponent(query)}*)`;
+      const q = encodeURIComponent(query);
+let url = `${supabaseUrl}/rest/v1/wines?select=*,prices(price_amount,currency,url,in_stock,shipping_cost,providers(name,website))&or=(name.ilike.*${q}*,region.ilike.*${q}*,grape.ilike.*${q}*,country.ilike.*${q}*,type.ilike.*${q}*)`;
 
       if (filter && filter !== 'All') {
         url += `&type=eq.${encodeURIComponent(filter)}`;
