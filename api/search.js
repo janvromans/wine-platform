@@ -116,6 +116,9 @@ let url = `${supabaseUrl}/rest/v1/wines?select=*,prices(price_amount,currency,ur
       });
 
       dbResults = await dbResponse.json();
+      if (dbResults && dbResults.length === 0) {
+  return res.status(200).json({ source: 'debug', query: query, url: url.substring(0, 200), status: dbResponse.status });
+}
     }
 
     if (Array.isArray(dbResults) && dbResults.length > 0) {
