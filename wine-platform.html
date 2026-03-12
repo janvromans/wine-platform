@@ -378,7 +378,7 @@ if (data.source === 'database') {
             </div>
             <p class="rc-desc">${w.description}</p>
             <div class="rc-offers">
-              <div class="rc-offer best">
+              <div class="rc-offer best" style="cursor:pointer" onclick="window.open('${best.url}', '_blank')">
                 <div class="rc-offer-badge">★ Best Price</div>
                 <div class="rc-offer-source">${bestOffer.source}</div>
                 <div class="rc-offer-price">${bestOffer.price}</div>
