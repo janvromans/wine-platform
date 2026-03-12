@@ -296,6 +296,77 @@ function setFilter(el, val) {
   activeFilter = val;
 }
 
+function renderDatabaseWine(w, i) {
+  const prices = w.prices || [];
+  const inStock = prices.filter(p => p.in_stock);
+  const sorted = inStock.sort((a, b) => a.price_amount - b.price_amount);
+  const best = sorted[0];
+  const others = sorted.slice(1, 3);
+
+  const offersHTML = best ? `
+    <div class="rc-offer best" style="cursor:pointer" onclick="window.open('${best.url}', '_blank')">
+      <div class="rc-offer-badge">★ Best Price</div>
+      <div class="rc-offer-source">${best.providers?.name || 'Unknown'} ↗</div>
+      <div class="rc-offer-price">€${parseFloat(best.price_amount).toFixed(2)}</div>
+      <div class="rc-offer-ship">${best.shipping_cost == 0 ? 'Free shipping' : '€' + parseFloat(best.shipping_cost).toFixed(2) + ' shipping'}</div>
+    </div>
+    ${others.map(o => `
+    <div class="rc-offer" style="cursor:pointer" onclick="window.open('${o.url}', '_blank')">
+      <div class="rc-offer-source">${o.providers?.name || 'Unknown'} ↗</div>
+      <div class="rc-offer-price">€${parseFloat(o.price_amount).toFixed(2)}</div>
+      <div class="rc-offer-ship">${o.shipping_cost == 0 ? 'Free shipping' : '€' + parseFloat(o.shipping_cost).toFixed(2) + ' shipping'}</div>
+    </div>`).join('')}
+  ` : `
+    <div class="rc-offer best">
+      <div class="rc-offer-badge">★ In Vinora Database</div>
+      <div class="rc-offer-source">No prices available yet</div>
+      <div class="rc-offer-price">—</div>
+      <div class="rc-offer-ship">Check back soon</div>
+    </div>
+  `;
+
+  return `
+    <div class="result-card" style="animation-delay:${i*0.1}s">
+      <div class="rc-header">
+        <div>
+          <div class="rc-name">${w.name}</div>
+          <div class="rc-region">${[w.region, w.country, w.grape].filter(Boolean).join(' · ')}</div>
+        </div>
+        <div class="rc-score">${w.type || 'Wine'}</div>
+      </div>
+      <p class="rc-desc">${w.description || ''}</p>
+      <div class="rc-offers">${offersHTML}</div>
+    </div>`;
+}
+
+function renderAIWine(w, i) {
+  const bestOffer = w.offers?.find(o => o.best) || w.offers?.[0];
+  const otherOffers = w.offers?.filter(o => !o.best) || [];
+  return `
+    <div class="result-card" style="animation-delay:${i*0.1}s">
+      <div class="rc-header">
+        <div><div class="rc-name">${w.name}</div><div class="rc-region">${w.region}</div></div>
+        <div class="rc-score">${w.score}</div>
+      </div>
+      <p class="rc-desc">${w.description}</p>
+      <div class="rc-offers">
+        ${bestOffer ? `
+        <div class="rc-offer best">
+          <div class="rc-offer-badge">★ Best Price</div>
+          <div class="rc-offer-source">${bestOffer.source}</div>
+          <div class="rc-offer-price">${bestOffer.price}</div>
+          <div class="rc-offer-ship">${bestOffer.shipping}</div>
+        </div>` : ''}
+        ${otherOffers.map(o => `
+        <div class="rc-offer">
+          <div class="rc-offer-source">${o.source}</div>
+          <div class="rc-offer-price">${o.price}</div>
+          <div class="rc-offer-ship">${o.shipping}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+}
+
 async function doSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
@@ -319,81 +390,16 @@ async function doSearch() {
     });
 
     const data = await response.json();
-
     loading.classList.remove('show');
 
-if (data.source === 'database') {
-  cards.innerHTML = data.results.map((w, i) => {
-    const prices = w.prices || [];
-    const inStock = prices.filter(p => p.in_stock);
-    const sorted = inStock.sort((a, b) => a.price_amount - b.price_amount);
-    const best = sorted[0];
-    const others = sorted.slice(1, 3);
-
-    const offersHTML = best ? `
-    <div class="rc-offer best" style="cursor:pointer" onclick="window.open('${best.url}', '_blank')">
-      <div class="rc-offer-badge">★ Best Price</div>
-      <div class="rc-offer-source">${best.providers?.name || 'Unknown'} ↗</div>
-      <div class="rc-offer-price">€${parseFloat(best.price_amount).toFixed(2)}</div>
-      <div class="rc-offer-ship">${best.shipping_cost == 0 ? 'Free shipping' : '€' + parseFloat(best.shipping_cost).toFixed(2) + ' shipping'}</div>
-    </div>
-    ${others.map(o => `
-    <div class="rc-offer" style="cursor:pointer" onclick="window.open('${o.url}', '_blank')">
-      <div class="rc-offer-source">${best.providers?.name || 'Unknown'} ↗</div>
-      <div class="rc-offer-price">€${parseFloat(o.price_amount).toFixed(2)}</div>
-      <div class="rc-offer-ship">${o.shipping_cost == 0 ? 'Free shipping' : '€' + parseFloat(o.shipping_cost).toFixed(2) + ' shipping'}</div>
-    </div>`).join('')}
-    ` : `
-      <div class="rc-offer best">
-        <div class="rc-offer-badge">★ In Vinora Database</div>
-        <div class="rc-offer-source">No prices available yet</div>
-        <div class="rc-offer-price">—</div>
-        <div class="rc-offer-ship">Check back soon</div>
-      </div>
-    `;
-
-    return `
-      <div class="result-card" style="animation-delay:${i*0.1}s">
-        <div class="rc-header">
-          <div>
-            <div class="rc-name">${w.name}</div>
-            <div class="rc-region">${[w.region, w.country, w.grape].filter(Boolean).join(' · ')}</div>
-          </div>
-          <div class="rc-score">${w.type || 'Wine'}</div>
-        </div>
-        <p class="rc-desc">${w.description || ''}</p>
-        <div class="rc-offers">${offersHTML}</div>
-      </div>`;
-  }).join('');
-  cards.innerHTML += `<div class="results-note">✓ Real prices from Vinora database · ${data.results.length} wine${data.results.length > 1 ? 's' : ''} found</div>`;
-} else {
-      cards.innerHTML = data.results.map((w, i) => {
-        const bestOffer = w.offers.find(o => o.best) || w.offers[0];
-        const otherOffers = w.offers.filter(o => !o.best);
-        return `
-          <div class="result-card" style="animation-delay:${i*0.1}s">
-            <div class="rc-header">
-              <div><div class="rc-name">${w.name}</div><div class="rc-region">${w.region}</div></div>
-              <div class="rc-score">${w.score}</div>
-            </div>
-            <p class="rc-desc">${w.description}</p>
-            <div class="rc-offers">
-              <div class="rc-offer best" style="cursor:pointer" onclick="window.open('${best.url}', '_blank')">
-                <div class="rc-offer-badge">★ Best Price</div>
-                <div class="rc-offer-source">${bestOffer.source}</div>
-                <div class="rc-offer-price">${bestOffer.price}</div>
-                <div class="rc-offer-ship">${bestOffer.shipping}</div>
-              </div>
-              ${otherOffers.map(o => `
-              <div class="rc-offer" style="cursor:pointer" onclick="window.open('${o.url}', '_blank')">
-                <div class="rc-offer-source">${o.source}</div>
-                <div class="rc-offer-price">${o.price}</div>
-                <div class="rc-offer-ship">${o.shipping}</div>
-              </div>`).join('')}
-            </div>
-          </div>`;
-      }).join('');
-      if (data.results.length) cards.innerHTML += `<div class="results-note">Powered by Vinora AI Sommelier · Add real wines to your database to replace these</div>`;
+    if (data.source === 'database' && data.results.length > 0) {
+      cards.innerHTML = data.results.map((w, i) => renderDatabaseWine(w, i)).join('');
+      cards.innerHTML += `<div class="results-note">✓ Real prices from Vinora database · ${data.results.length} wine${data.results.length > 1 ? 's' : ''} found · Click any provider to buy</div>`;
+    } else if (data.source === 'ai' && data.results.length > 0) {
+      cards.innerHTML = data.results.map((w, i) => renderAIWine(w, i)).join('');
+      cards.innerHTML += `<div class="results-note">Powered by Vinora AI Sommelier · Results are illustrative</div>`;
+    } else {
+      cards.innerHTML = `<div class="result-card"><p style="color:var(--warm-gray);font-size:14px;">No results found. Try a different search!</p></div>`;
     }
 
   } catch(e) {
