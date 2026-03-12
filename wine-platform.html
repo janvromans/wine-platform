@@ -385,7 +385,7 @@ if (data.source === 'database') {
                 <div class="rc-offer-ship">${bestOffer.shipping}</div>
               </div>
               ${otherOffers.map(o => `
-              <div class="rc-offer">
+              <div class="rc-offer" style="cursor:pointer" onclick="window.open('${o.url}', '_blank')">
                 <div class="rc-offer-source">${o.source}</div>
                 <div class="rc-offer-price">${o.price}</div>
                 <div class="rc-offer-ship">${o.shipping}</div>
