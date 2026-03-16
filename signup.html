@@ -261,7 +261,7 @@ async function submitForm() {
   });
   if (!valid) { alert('Please fill in all required fields.'); return; }
 
-  const btn = document.querySelector('.submit-btn');
+  const btn = document.querySelector('button[onclick="submitForm()"]');
   btn.textContent = 'Submitting…';
   btn.disabled = true;
 
