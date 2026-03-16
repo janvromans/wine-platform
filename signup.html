@@ -286,6 +286,7 @@ async function submitForm() {
       body: JSON.stringify(data)
     });
 
+    console.log('Status:', response.status, await response.text());
     if (response.ok) {
       document.getElementById('signupForm').style.display = 'none';
       document.getElementById('successMsg').classList.add('show');
