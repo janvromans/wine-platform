@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>
+<script>
 (function() {
   var correctPassword = "Vinoratestcase7@";
   
-  if (sessionStorage.getItem("vinora_auth") !== correctPassword) {
-    
+  if (sessionStorage.getItem("vinora_auth") === correctPassword) return;
+  
+  window.addEventListener("load", function() {
     var overlay = document.createElement("div");
     overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;";
-    overlay.innerHTML = `
-      <h2 style="color:white;font-family:sans-serif;margin-bottom:20px;">Vinora — Privé toegang</h2>
-      <input id="pw" type="password" placeholder="Wachtwoord" style="padding:10px;font-size:16px;border-radius:5px;border:none;margin-bottom:10px;width:250px;">
-      <button onclick="checkPw()" style="padding:10px 20px;background:#6c3483;color:white;border:none;border-radius:5px;font-size:16px;cursor:pointer;">Inloggen</button>
-      <p id="error" style="color:red;font-family:sans-serif;margin-top:10px;display:none;">Verkeerd wachtwoord</p>
-    `;
+    overlay.innerHTML = '<h2 style="color:white;font-family:sans-serif;margin-bottom:20px;">Vinora — Privé toegang</h2><input id="pw" type="password" placeholder="Wachtwoord" style="padding:10px;font-size:16px;border-radius:5px;border:none;margin-bottom:10px;width:250px;"><button onclick="checkPw()" style="padding:10px 20px;background:#6c3483;color:white;border:none;border-radius:5px;font-size:16px;cursor:pointer;">Inloggen</button><p id="error" style="color:red;font-family:sans-serif;margin-top:10px;display:none;">Verkeerd wachtwoord</p>';
     document.body.appendChild(overlay);
     
     window.checkPw = function() {
@@ -22,19 +18,18 @@
       if (pw === correctPassword) {
         sessionStorage.setItem("vinora_auth", correctPassword);
         overlay.remove();
-        document.body.style.display = "";
       } else {
         document.getElementById("error").style.display = "block";
       }
-    }
+    };
     
     document.addEventListener("keypress", function(e) {
       if (e.key === "Enter") checkPw();
     });
-  }
+  });
 })();
 </script>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vinora — Find Your Wine, Anywhere</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
