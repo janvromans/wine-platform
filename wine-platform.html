@@ -6,9 +6,6 @@
   var correctPassword = "Vinoratestcase7@";
   
   if (sessionStorage.getItem("vinora_auth") !== correctPassword) {
-    document.addEventListener("DOMContentLoaded", function() {
-      document.body.style.display = "none";
-    });
     
     var overlay = document.createElement("div");
     overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;";
