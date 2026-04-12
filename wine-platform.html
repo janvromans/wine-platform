@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+  (function() {
+    var correctPassword = "Vinoratestcase7@";
+    var enteredPassword = sessionStorage.getItem("vinora_auth");
+    
+    if (enteredPassword !== correctPassword) {
+      var password = prompt("Voer het wachtwoord in om Vinora te bekijken:");
+      
+      if (password !== correctPassword) {
+        document.body.innerHTML = "<h1 style='text-align:center; margin-top:50vh; transform:translateY(-50%); font-family:sans-serif;'>Toegang geweigerd</h1>";
+        return;
+      }
+      
+      sessionStorage.setItem("vinora_auth", password);
+    }
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vinora — Find Your Wine, Anywhere</title>
